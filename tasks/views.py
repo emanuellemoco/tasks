@@ -1,10 +1,10 @@
 #How to use serializer from https://www.askpython.com/django/django-listview
 
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpRequest
+from django.http import HttpResponse, HttpRequest, JsonResponse
+from rest_framework.parsers import JSONParser
 from .models import Task
 from .serializer import Serializer
-from django.http import JsonResponse 
 # Create your views here.
 
 
@@ -16,5 +16,12 @@ def get_task(request: HttpRequest):
     serializer = Serializer(all_tasks, many =True)
     return JsonResponse(serializer.data, safe =False)
 
+def post_task(request):
+    data = JSONParser().parse(request)
+    serializer =Serializer(data = data)
+    if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data,status =201)
+        return JsonResponse(serializer.errors,status = 400)
 
     
