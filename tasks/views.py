@@ -2,9 +2,11 @@
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpRequest, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from .models import Task
 from .serializer import Serializer
+from .forms import Form
 # Create your views here.
 
 
@@ -16,14 +18,17 @@ def get_task(request: HttpRequest):
     serializer = Serializer(all_tasks, many =True)
     return JsonResponse(serializer.data, safe =False)
 
+@csrf_exempt
 def post_task(request):
-    data = JSONParser().parse(request)
-    serializer =Serializer(data = data)
-    if serializer.is_valid():
-        serializer.save()
-        return JsonResponse(serializer.data,status =201)
-    else: 
+    form = Form(request.POST)
+    if form.is_valid():
+        form.save()
+        return JsonResponse(form.data,status =201)
+    else:
+        form =Form()
+        context = {
+            'form':form
+        }
         return HttpResponse("TRISTEZA")
-        #return JsonResponse(serializer.errors,status = 400)
 
     
