@@ -20,8 +20,10 @@ def post_task(request):
     data = JSONParser().parse(request)
     serializer =Serializer(data = data)
     if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data,status =201)
-        return JsonResponse(serializer.errors,status = 400)
+        serializer.save()
+        return JsonResponse(serializer.data,status =201)
+    else: 
+        return HttpResponse("TRISTEZA")
+        #return JsonResponse(serializer.errors,status = 400)
 
     
